@@ -60,13 +60,13 @@
 						<array class="NSMutableArray" key="NSSubviews">
 							<object class="IBUINavigationBar" id="865070871">
 								<reference key="NSNextResponder" ref="752645637"/>
-								<int key="NSvFlags">1314</int>
+								<int key="NSvFlags">1325</int>
 								<object class="NSPSMatrix" key="NSFrameMatrix"/>
 								<string key="NSFrameSize">{320, 44}</string>
 								<reference key="NSSuperview" ref="752645637"/>
 								<reference key="NSWindow"/>
 								<reference key="NSNextKeyView" ref="770079372"/>
-								<float key="IBUIAlpha">0.80000001192092896</float>
+								<float key="IBUIAlpha">0.69999998807907104</float>
 								<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
 								<reference key="IBUIItems" ref="0"/>
 							</object>

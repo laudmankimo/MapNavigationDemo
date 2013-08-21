@@ -52,6 +52,9 @@
 						   Region:@"cn"
 					   avoidTolls:NO
 					avoidHighways:NO];
+
+	routeInfoBar.frame = CGRectMake(0.0, 0.0, 320.0, 45.0);
+	navigationBar.frame = CGRectMake(0.0, 0.0, 320.0, 45.0);
 }
 
 - (void)viewDidUnload
@@ -142,8 +145,8 @@
 
 	if (size.width > 320.0)
 	{
-		[routeInfoBar setFrame:CGRectMake(0.0, 0.0, 320.0, 64.0)];
-		[navigationBar setFrame:CGRectMake(0.0, 0.0, 320.0, 64.0)];
+		routeInfoBar.frame = CGRectMake(0.0, 0.0, 320.0, 65.0);
+		navigationBar.frame = CGRectMake(0.0, 0.0, 320.0, 65.0);
 		timeCosts.text = [NSString stringWithFormat:@"%@ - %@",
 		weakLegPointer.duration.text,
 		weakLegPointer.distance.text];
@@ -152,8 +155,8 @@
 	}
 	else
 	{
-		[routeInfoBar setFrame:CGRectMake(0.0, 0.0, 320.0, 44.0)];
-		[navigationBar setFrame:CGRectMake(0.0, 0.0, 320.0, 44.0)];
+		routeInfoBar.frame = CGRectMake(0.0, 0.0, 320.0, 45.0);
+		navigationBar.frame = CGRectMake(0.0, 0.0, 320.0, 45.0);
 	}
     [UIView commitAnimations];
 }
@@ -498,16 +501,20 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer
     src = [[Place alloc]init];
     src.name = @"Home";
     src.description = @"Sweet home";
-    src.latitude = [[NSNumber alloc]initWithDouble:28.6695];
-    src.longitude = [[NSNumber alloc]initWithDouble:115.85763];
+//    src.latitude = [[NSNumber alloc]initWithDouble:28.6695];
+//    src.longitude = [[NSNumber alloc]initWithDouble:115.85763];
+	src.latitude = @28.6695;
+	src.longitude = @115.85763;
 
     dst = [[Place alloc] init];
     dst.name = @"Office";
     dst.description = @"Bad office";
-    dst.latitude = [[NSNumber alloc]initWithDouble:31.23145];
-    dst.longitude = [[NSNumber alloc]initWithDouble:121.47651];
+//    dst.latitude = [[NSNumber alloc]initWithDouble:31.23145];
+//    dst.longitude = [[NSNumber alloc]initWithDouble:121.47651];
+	dst.latitude = @31.23145;
+	dst.longitude = @121.47651;
 
-    //[activity startAnimating];
+//    [activity startAnimating];
     [self showRouteFrom:src to:dst];
     [activity stopAnimating];
 	[self updateRouteInfoBar];
