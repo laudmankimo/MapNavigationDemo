@@ -9,7 +9,6 @@
 #import "PlaceMark.h"
 
 @implementation PlaceMark
-
 @synthesize coordinate;
 @synthesize place;
 
@@ -27,14 +26,14 @@
     return self;
 }
 
-- (NSString *)subtitle
-{
-    return self.place.description;
-}
-
 - (NSString *)title
 {
     return self.place.name;
+}
+
+- (NSString *)subtitle
+{
+    return self.place.description;
 }
 
 @end

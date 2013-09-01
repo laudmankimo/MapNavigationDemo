@@ -12,8 +12,7 @@
 
 @interface PlaceMark : NSObject <MKAnnotation>
 
-@property (nonatomic, readonly) CLLocationCoordinate2D  coordinate;
-@property (nonatomic, retain) Place                     *place;
+@property (strong, nonatomic) Place *place;
 
 - (id)initWithPlace:(Place *)p;
 
