@@ -60,7 +60,7 @@
     inContext   :context];
 
 //	CGImageRef imageReference = self.overlayImage.CGImage;
-#ifdef DEBUG
+#ifdef DEBUGXXX
     MKMapRect theMapRect = self.overlay.boundingMapRect;
     CGRect theRect = [self rectForMapRect:theMapRect];
     CGContextSetRGBFillColor (context, 0, 0, 1, .1);//blue
@@ -75,26 +75,60 @@
 - (void)createPath
 {
     // turn the polyline into a path
-    CGMutablePathRef    path = CGPathCreateMutable();
+    CGMutablePathRef    newPath = CGPathCreateMutable();
     BOOL                pathIsEmpty = YES;
+	NSUInteger			pointCount = self.polyline.pointCount;	// for performance
+	CGPoint				center;
+	CGPoint				point;
+	CGPoint				nextPoint;
 
-    for (NSUInteger idx = 0; idx < self.polyline.pointCount; idx++)
+	CGPoint				vector;
+	float				angle;
+	// forward
+	for (NSUInteger idx = 0; idx < pointCount; idx++)
     {
-        CGPoint point = [self pointForMapPoint:self.polyline.points[idx]];
-
+		center = [self pointForMapPoint:self.polyline.points[idx]];
+		if (idx == (pointCount-1))	// last point
+		{
+			CGPathAddLineToPoint(newPath, nil, center.x, center.y);
+			break;
+		}
+		nextPoint = [self pointForMapPoint:self.polyline.points[idx+1]];
+		vector = CGPointMake(nextPoint.x - center.x, nextPoint.y - center.y);
+		angle = atan2f(vector.y, vector.x);
+		point.x = center.x + (sinf(angle) * self.lineWidth);
+		point.y = center.y + (cosf(angle) * self.lineWidth);
+		
         if (pathIsEmpty)
         {
-            CGPathMoveToPoint(path, nil, point.x, point.y);
+            CGPathMoveToPoint(newPath, nil, center.x, center.y);
             pathIsEmpty = NO;
         }
         else
         {
-            CGPathAddLineToPoint(path, nil, point.x, point.y);
+            CGPathAddLineToPoint(newPath, nil, point.x, point.y);
         }
     }
-
-    self.path = path;
-    CGPathRelease(path);
+	// backward
+	for (NSInteger idx = (pointCount-2); idx >= 0; idx--)
+    {
+		center = [self pointForMapPoint:self.polyline.points[idx]];
+		if (idx == 0)	// last point
+		{
+			CGPathAddLineToPoint(newPath, nil, center.x, center.y);
+			break;
+		}
+		nextPoint = [self pointForMapPoint:self.polyline.points[idx-1]];
+		vector = CGPointMake(nextPoint.x - center.x, nextPoint.y - center.y);
+		angle = atan2f(vector.y, vector.x);
+		point.x = center.x + (sinf(angle) * self.lineWidth);
+		point.y = center.y + (cosf(angle) * self.lineWidth);
+		
+		CGPathAddLineToPoint(newPath, nil, point.x, point.y);
+    }
+	CGPathCloseSubpath(newPath);
+    self.path = newPath;
+    CGPathRelease(newPath);
 
 //	  CGMutablePathRef pathRef = CGPathCreateMutable();
 //    CGPathMoveToPoint(pathRef, NULL, 4, 4);
