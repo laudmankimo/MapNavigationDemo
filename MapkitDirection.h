@@ -23,7 +23,6 @@
 {
 	NSMutableData *webdata;
 	NSURLConnection *connection;
-	NSMutableArray *array;
 }
 @property (nonatomic, copy) NSString *status;
 @property (nonatomic, retain) NSMutableArray *arrayOfRoutes;

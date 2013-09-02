@@ -18,7 +18,6 @@
     [arrayOfRoutes release];
     [webdata release];
     [connection release];
-    [array release];
     [super dealloc];
 }
 
