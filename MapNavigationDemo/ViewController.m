@@ -169,11 +169,11 @@
         [my_mapView removeAnnotations:my_mapView.annotations];
 	}
 
-    PlaceMark   *from = [[PlaceMark alloc] initWithPlace:f];
-    PlaceMark   *to = [[PlaceMark alloc] initWithPlace:t];
+    PlaceMark   *from = [[PlaceMark alloc] initWithPlace:f];	f = nil;
+    PlaceMark   *to = [[PlaceMark alloc] initWithPlace:t];	t = nil;
 
-    [my_mapView addAnnotation:from];
-    [my_mapView addAnnotation:to];
+    [my_mapView addAnnotation:from];	from = nil;
+    [my_mapView addAnnotation:to];	to = nil;
 
     [self updateRouteView];
     [self centerMap];
@@ -280,12 +280,12 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer
 {
     if (recognizer.state == UIGestureRecognizerStateBegan)
     {
-//        CGPoint                 touchPoint = [recognizer locationInView:my_mapView];
-//        CLLocationCoordinate2D  coordinate = [my_mapView convertPoint:touchPoint
-//													  toCoordinateFromView:my_mapView];
-//        dst.latitude = [dst.latitude initWithDouble:coordinate.latitude];
-//        dst.longitude = [dst.longitude initWithDouble:coordinate.longitude];
-//        [self showRouteFrom:src to:dst];
+//CGPoint                 touchPoint = [recognizer locationInView:my_mapView];
+//CLLocationCoordinate2D  coordinate = [my_mapView convertPoint:touchPoint
+//toCoordinateFromView:my_mapView];
+//dst.latitude = [dst.latitude initWithDouble:coordinate.latitude];
+//dst.longitude = [dst.longitude initWithDouble:coordinate.longitude];
+//[self showRouteFrom:src to:dst];
     }
 }
 
@@ -377,13 +377,10 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer
 		// remove active, last polyline (top layer) on the map
 		[my_mapView removeOverlay:[my_mapView.overlays lastObject]];
 
-		// find out current active polyline
+		// switch active to next polyline
 		NSUInteger totalRouteCount = ([arrayOfInactivePolyline count]);
 
-		if (polylineIndex == (totalRouteCount - 1))
-			polylineIndex = 0;
-		else
-			polylineIndex++;
+		polylineIndex = (polylineIndex == totalRouteCount-1) ? 0 : (polylineIndex+1);
 
 		// set active poly line to next polyline
 		ASPolyline *lineOne = [arrayOfActivePolyline objectAtIndex:polylineIndex];
@@ -456,22 +453,22 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer
        {
             polylineView.lineWidth = 5.0f;
             polylineView.borderMultiplier = 1.5f;
-            //polylineView.backgroundColor = [UIColor clearColor];
-            //polylineView.fillColor = [UIColor blueColor];
+            polylineView.backgroundColor = [UIColor clearColor];
+            polylineView.fillColor = [UIColor blueColor];
             polylineView.strokeColor = [[UIColor blueColor]colorWithAlphaComponent:0.5f];
             polylineView.borderColor = [UIColor colorWithRed:0.0f green:0.1f blue:1.0f alpha:1.0f];
 
             // uncomment these line if you want to enable dash line
-            NSArray *lineDashPattern = @[@4, @8];
-            polylineView.lineDashPhase = 2.0f;
-            polylineView.lineDashPattern = lineDashPattern;
+            //NSArray *lineDashPattern = @[@4, @8];
+            //polylineView.lineDashPhase = 2.0f;
+            //polylineView.lineDashPattern = lineDashPattern;
        }
        else	// inactive
        {
-            polylineView.lineWidth = 4.0f;
+            polylineView.lineWidth = 5.0f;
             polylineView.borderMultiplier = 1.5f;
-            //polylineView.backgroundColor = [UIColor clearColor];
-            //polylineView.fillColor = [UIColor blueColor];
+            polylineView.backgroundColor = [UIColor yellowColor];
+            polylineView.fillColor = [UIColor cyanColor];
             polylineView.strokeColor = [UIColor colorWithRed:0.0f green:0.5f blue:0.5f alpha:0.2f];
             polylineView.borderColor = [UIColor colorWithRed:0.0f green:0.0f blue:1.0f alpha:0.5f];
        }
@@ -499,22 +496,23 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer
     routeInfoBar.hidden = NO;
 
     src = [[Place alloc]init];
+    dst = [[Place alloc]init];
     src.name = @"Home";
     src.description = @"Sweet home";
-//    src.latitude = [[NSNumber alloc]initWithDouble:28.6695];
-//    src.longitude = [[NSNumber alloc]initWithDouble:115.85763];
-	src.latitude = @28.6695;
-	src.longitude = @115.85763;
-
-    dst = [[Place alloc] init];
     dst.name = @"Office";
     dst.description = @"Bad office";
-//    dst.latitude = [[NSNumber alloc]initWithDouble:31.23145];
-//    dst.longitude = [[NSNumber alloc]initWithDouble:121.47651];
-	dst.latitude = @31.23145;
-	dst.longitude = @121.47651;
 
-//    [activity startAnimating];
+	Routes *route = [directions.arrayOfRoutes objectAtIndex:0];
+	Legs *leg = [route.legs objectAtIndex:0];
+	CLLocationCoordinate2D start = leg.start_location;
+	CLLocationCoordinate2D end = leg.end_location;
+	route = nil;
+	leg = nil;
+	src.latitude = [[NSNumber alloc]initWithDouble:start.latitude];
+	src.longitude = [[NSNumber alloc]initWithDouble:start.longitude];
+	dst.latitude = [[NSNumber alloc]initWithDouble:end.latitude];
+	dst.longitude = [[NSNumber alloc]initWithDouble:end.longitude];
+
     [self showRouteFrom:src to:dst];
     [activity stopAnimating];
 	[self updateRouteInfoBar];
