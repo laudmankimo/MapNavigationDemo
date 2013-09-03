@@ -76,139 +76,132 @@
 - (void)createPath
 {
     // turn the polyline into a path
-//    CGMutablePathRef    newPath = CGPathCreateMutable();
-//    BOOL                pathIsEmpty = YES;
-//	NSUInteger			pointCount = self.polyline.pointCount;	// for performance
-//	CGPoint				center;
-//	CGPoint				point;
-//	CGPoint				nextPoint;
-//	CGPoint				vector;
-//	float				angle;
-//#define RADIUS 5.0f
-//	// forward
-//	for (NSUInteger idx = 0; idx < pointCount; idx++)
-//    {
-//		center = [self pointForMapPoint:self.polyline.points[idx]];
-//		if (idx == (pointCount-1))	// last point
-//		{
-//			CGPathAddLineToPoint(newPath, nil, center.x, center.y);
-//			break;
-//		}
-//		nextPoint = [self pointForMapPoint:self.polyline.points[idx+1]];
-//		vector = CGPointMake(nextPoint.x - center.x, nextPoint.y - center.y);
-//		angle = atan2f(vector.y, vector.x);
-//		point.x = center.x + (sinf(angle) * self.lineWidth);
-//		point.y = center.y + (cosf(angle) * self.lineWidth);
-//		point.x = center.x + (sinf(angle) * RADIUS);
-//		point.y = center.y + (cosf(angle) * RADIUS);
-//
-//        if (pathIsEmpty)
-//        {
-//            CGPathMoveToPoint(newPath, nil, center.x, center.y);
-//            pathIsEmpty = NO;
-//        }
-//        else
-//        {
-//            CGPathAddLineToPoint(newPath, nil, point.x, point.y);
-//        }
-//    }
-//	// backward
-//	for (NSInteger idx = (pointCount-2); idx >= 0; idx--)
-//    {
-//		center = [self pointForMapPoint:self.polyline.points[idx]];
-//		if (idx == 0)	// last point
-//		{
-//			CGPathAddLineToPoint(newPath, nil, center.x, center.y);
-//			break;
-//		}
-//		nextPoint = [self pointForMapPoint:self.polyline.points[idx-1]];
-//		vector = CGPointMake(nextPoint.x - center.x, nextPoint.y - center.y);
-//		angle = atan2f(vector.y, vector.x);
-//		point.x = center.x + (sinf(angle) * self.lineWidth);
-//		point.y = center.y + (cosf(angle) * self.lineWidth);
-//		point.x = center.x + (sinf(angle) * RADIUS);
-//		point.y = center.y + (cosf(angle) * RADIUS);
-//
-//		CGPathAddLineToPoint(newPath, nil, point.x, point.y);
-//    }
-//	CGPathCloseSubpath(newPath);
-//    self.path = newPath;
-//    CGPathRelease(newPath);
-
-//下列代码显示出了地图上的MKOverlay的坐标系统
-	BOOL pathIsEmpty = YES;
-	CGMutablePathRef pathRef = CGPathCreateMutable();
-	CGPoint point;
-	CGPoint center;
-	float angle;
-	float radius = 2500.0f;
-//	NSUInteger idx = 0;
-	NSUInteger pointCount = self.polyline.pointCount;	// for performance
-
-	center = [self pointForMapPoint:self.polyline.points[pointCount/2]];
-//	MKMapPoint centerGlobal = [self mapPointForPoint:center];
+    CGMutablePathRef    newPath = CGPathCreateMutable();
+    BOOL                pathIsEmpty = YES;
+	NSUInteger			pointCount = self.polyline.pointCount;	// for performance
+	CGPoint				center;
+	CGPoint				point;
+	CGPoint				nextPoint;
+	CGPoint				vector;
+	float				angle;
+#define RADIUS 10.0f
 	MKMapPoint pointGlobal;
 	NSValue *pptGlobal;
-	
+
 	if (self.polyline.finalPath == nil)
 		self.polyline.finalPath = [[NSMutableArray alloc]init];	// 0 objects
 	else
 		[self.polyline.finalPath removeAllObjects];
 
-	NSLog(@"center(x,y) = (%f, %f), and radius = %f", center.x, center.y, radius);
-	for (angle = 0; angle < 6.28318530717959f * 1.0f; angle += (6.28318530717959/50.0))
-	{
-		point.x = center.x + (sinf(angle) * radius);
-		point.y = center.y + (cosf(angle) * radius);
+	// forward
+	for (NSUInteger idx = 0; idx < pointCount; idx++)
+    {
+		center = [self pointForMapPoint:self.polyline.points[idx]];
+		if (idx == (pointCount-1))	// last point
+		{
+			pointGlobal = [self mapPointForPoint:center];
+			pptGlobal = [NSValue value:&pointGlobal withObjCType:@encode(MKMapPoint)];
+			[self.polyline.finalPath addObject:pptGlobal];
+			pptGlobal = nil;
+			
+			CGPathAddLineToPoint(newPath, nil, center.x, center.y);
+			break;
+		}
+		nextPoint = [self pointForMapPoint:self.polyline.points[idx+1]];
+		vector = CGPointMake(nextPoint.x - center.x, nextPoint.y - center.y);
+		angle = atan2f(vector.y, vector.x);
 
+		point.x = center.x + (sinf(angle) * RADIUS);
+		point.y = center.y + (cosf(angle) * RADIUS);
+		
 		pointGlobal = [self mapPointForPoint:point];
 		pptGlobal = [NSValue value:&pointGlobal withObjCType:@encode(MKMapPoint)];
-//		[self.polyline.finalPath addObject:(__bridge id)(&pointGlobal)];
-		[self.polyline.finalPath addObject:pptGlobal]; pptGlobal = nil;
-
+		[self.polyline.finalPath addObject:pptGlobal];
+		pptGlobal = nil;
+		
         if (pathIsEmpty)
         {
-            CGPathMoveToPoint(pathRef, nil, point.x, point.y);
+            CGPathMoveToPoint(newPath, nil, center.x, center.y);
             pathIsEmpty = NO;
         }
         else
         {
-            CGPathAddLineToPoint(pathRef, nil, point.x, point.y);
+            CGPathAddLineToPoint(newPath, nil, point.x, point.y);
         }
-	}
-    CGPathCloseSubpath(pathRef);
-	
-	self.path = pathRef;
-//	CGPoint inPoint;
-//	CGPoint outPoint;
-//	inPoint = CGPointMake(center.x, center.y + radius - 1.0f);
-//	inPoint = CGPointMake(center.x + radius + 1.0f, center.y);
-//    if (CGPathContainsPoint(pathRef, NULL, inPoint, NO))
-//    {
-//        NSLog(@"inPoint (%.1f,%.1f)  IN %@ %@ path!", inPoint.x, inPoint.y, self.polyline, self.polyline.active ? @"active" : @"inactive");
-//    }
-//	else if (!CGPathContainsPoint(pathRef, NULL, inPoint, NO))
-//    {
-//        NSLog(@"inPoint (%.1f,%.1f) OUT %@ %@ path!", inPoint.x, inPoint.y, self.polyline, self.polyline.active ? @"active" : @"inactive");
-//    }
+    }
+	// backward
+	for (NSInteger idx = (pointCount-2); idx >= 0; idx--)
+    {
+		center = [self pointForMapPoint:self.polyline.points[idx]];
+		if (idx == 0)	// last point
+		{
+			pointGlobal = [self mapPointForPoint:center];
+			pptGlobal = [NSValue value:&pointGlobal withObjCType:@encode(MKMapPoint)];
+			[self.polyline.finalPath addObject:pptGlobal];
+			pptGlobal = nil;
+			CGPathAddLineToPoint(newPath, nil, center.x, center.y);
+			break;
+		}
+		nextPoint = [self pointForMapPoint:self.polyline.points[idx-1]];
+		vector = CGPointMake(nextPoint.x - center.x, nextPoint.y - center.y);
+		angle = atan2f(vector.y, vector.x);
 
-////////////////////////////////////////////////////////////////////////////////
-//    CGMutablePathRef pathRef = CGPathCreateMutable();
-//    CGPathMoveToPoint(pathRef, NULL, 4, 4);
-//    CGPathAddLineToPoint(pathRef, NULL, 4, 8);
-//    CGPathAddLineToPoint(pathRef, NULL, 10, 4);
-//    CGPathAddLineToPoint(pathRef, NULL, 4, 4);
-//    CGPathRelease(newPath);
-//    CGPoint point = CGPointMake(5,7);
-//    CGPoint outPoint = CGPointMake(5,10);
-//    if (CGPathContainsPoint(pathRef, NULL, point, NO))
-//    {
-//        NSLog(@"point in path!");
-//    }
-//    if (!CGPathContainsPoint(pathRef, NULL, outPoint, NO))
-//    {
-//        NSLog(@"outPoint out path!");
-//    }
+		point.x = center.x + (sinf(angle) * RADIUS);
+		point.y = center.y + (cosf(angle) * RADIUS);
+
+		pointGlobal = [self mapPointForPoint:point];
+		pptGlobal = [NSValue value:&pointGlobal withObjCType:@encode(MKMapPoint)];
+		[self.polyline.finalPath addObject:pptGlobal];
+		pptGlobal = nil;
+
+		CGPathAddLineToPoint(newPath, nil, point.x, point.y);
+    }
+	CGPathCloseSubpath(newPath);
+    self.path = newPath;
+    CGPathRelease(newPath);
+
+//下列代码显示出了地图上的MKOverlay的坐标系统
+//	BOOL pathIsEmpty = YES;
+//	CGMutablePathRef pathRef = CGPathCreateMutable();
+//	CGPoint point;
+//	CGPoint center;
+//	float angle;
+//	float radius = 2500.0f;
+//	NSUInteger pointCount = self.polyline.pointCount;	// for performance
+//
+//	center = [self pointForMapPoint:self.polyline.points[pointCount/2]];
+//	MKMapPoint pointGlobal;
+//	NSValue *pptGlobal;
+//	
+//	if (self.polyline.finalPath == nil)
+//		self.polyline.finalPath = [[NSMutableArray alloc]init];	// 0 objects
+//	else
+//		[self.polyline.finalPath removeAllObjects];
+//
+//	NSLog(@"center(x,y) = (%f, %f), and radius = %f", center.x, center.y, radius);
+//	for (angle = 0; angle < 6.28318530717959f * 1.0f; angle += (6.28318530717959/50.0))
+//	{
+//		point.x = center.x + (sinf(angle) * radius);
+//		point.y = center.y + (cosf(angle) * radius);
+//
+//		pointGlobal = [self mapPointForPoint:point];
+//		pptGlobal = [NSValue value:&pointGlobal withObjCType:@encode(MKMapPoint)];
+//		[self.polyline.finalPath addObject:pptGlobal];
+//		pptGlobal = nil;
+//
+//        if (pathIsEmpty)
+//        {
+//            CGPathMoveToPoint(pathRef, nil, point.x, point.y);
+//            pathIsEmpty = NO;
+//        }
+//        else
+//        {
+//            CGPathAddLineToPoint(pathRef, nil, point.x, point.y);
+//        }
+//	}
+//    CGPathCloseSubpath(pathRef);
+//	
+//	self.path = pathRef;
 }
 
 //- (MKMapRect)overlayBoundingMapRect
@@ -263,7 +256,8 @@
 
     // now set the colour and width
     CGContextSetStrokeColorWithColor(context, color);
-    CGContextSetLineWidth(context, width / zoomScale);
+//    CGContextSetLineWidth(context, width / zoomScale);
+	CGContextSetLineWidth(context, MKRoadWidthAtZoomScale(zoomScale));
     CGContextStrokePath(context);
 }
 
