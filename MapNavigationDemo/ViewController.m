@@ -46,8 +46,10 @@
 
 	[activity startAnimating];
 
-	[directions navigateFromPoint:CLLocationCoordinate2DMake(28.6695, 115.85763)
-	                      ToPoint:CLLocationCoordinate2DMake(31.23145, 121.47651)
+	[directions navigateFromPoint:CLLocationCoordinate2DMake(31.108654, 121.338329)
+//(28.6695, 115.85763)
+	                      ToPoint:CLLocationCoordinate2DMake(31.131505, 121.334639)
+//(31.23145, 121.47651)
 					  Alternative:YES
 						   Region:@"cn"
 					   avoidTolls:NO
@@ -198,7 +200,8 @@
 
 	NSUInteger u = 0;
 	__weak NSMutableArray *_tmpMutableArray = directions.arrayOfRoutes;
-	
+
+	NSUInteger uu = 0;
 	for (Routes *routexxx in _tmpMutableArray)
 	{
 		__weak NSArray *route = routexxx.overview_polyline;	// use weak pointer to prevent autoincrease of retainCount
@@ -217,18 +220,25 @@
 		lineOne.active = NO;
     	[my_mapView addOverlay:lineOne];
 		[arrayOfInactivePolyline addObject:lineOne];
+#ifdef DEBUG
+NSLog(@"%u %@ %@", uu, lineOne.active ? @"active" : @"inactive", lineOne);
+#endif
 		lineOne = nil;
 
 		lineOne = (ASPolyline *)[ASPolyline polylineWithCoordinates:pointsToUse count:pointCount];
 		lineOne.active = YES;
 		[arrayOfActivePolyline addObject:lineOne];
 		lineOne = nil;
+		uu++;
 	}
 
 	// set first route as active route
 //	lineOne = [arrayOfActivePolyline objectAtIndex:[arrayOfActivePolyline count]-1];
 	lineOne = [arrayOfActivePolyline objectAtIndex:0];
 	[my_mapView addOverlay:lineOne];
+#ifdef DEBUG
+NSLog(@"%u %@ %@", uu, lineOne.active ? @"active" : @"inactive", lineOne);
+#endif
 	lineOne = nil;
 	polylineIndex = 0;
 }
@@ -289,89 +299,80 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer
     }
 }
 
+- (BOOL)isTouchPoint:(CGPoint)touchPoint touchInsidePolyline:(ASPolyline *)polyline
+{
+    CGMutablePathRef    pathRef = CGPathCreateMutable();
+    NSMutableArray      *mutableArray = polyline.finalPath;
+    MKMapPoint          mapPoint;
+    BOOL                first_time = YES;
+    BOOL                result;
+    CGPoint             point;
+
+    for (NSValue *value in mutableArray)
+    {
+        [value getValue:&mapPoint];
+        point = [my_mapView convertCoordinate:MKCoordinateForMapPoint(mapPoint) toPointToView:my_mapView];
+
+        if (first_time)
+        {
+            CGPathMoveToPoint(pathRef, NULL, point.x, point.y);
+            // NSLog(@"firstPoint(x, y) = (%f, %f)", point.x, point.y);
+            first_time = NO;
+        }
+        else
+        {
+            CGPathAddLineToPoint(pathRef, NULL, point.x, point.y);
+            // NSLog(@"nextPoint(x, y) = (%f, %f)", point.x, point.y);
+        }
+    }
+
+    CGPathCloseSubpath(pathRef);
+
+    if (CGPathContainsPoint(pathRef, nil, touchPoint, NO))
+    {
+        result = YES;
+    }
+    else
+    {
+        result = NO;
+    }
+
+    CGPathRelease(pathRef);
+    return result;
+}
+
 - (IBAction)singleTapAct:(UITapGestureRecognizer *)recognizer
 {
-//	MKMapView               *mapView = (MKMapView *)recognizer.view;
-//	ASPolylineView          *tappedOverlay = nil;
-//	CGPoint                 touchPoint = [recognizer locationInView:mapView];
+	MKMapView               *mapView = (MKMapView *)recognizer.view;
+	CGPoint                 touchPoint = [recognizer locationInView:mapView];
 //	CLLocationCoordinate2D  touchMapCoordinate = [mapView convertPoint:touchPoint toCoordinateFromView:mapView];
-//	MKMapPoint              mapPoint = MKMapPointForCoordinate(touchMapCoordinate);
-//	NSUInteger				u = 1;
-//	
-//	for (ASPolyline *polyline in arrayOfInactivePolyline)
-//	{
-//		ASPolylineView *view = (ASPolylineView *)[mapView viewForOverlay:polyline];
-//		CGPoint polygonViewPoint = [view pointForMapPoint:mapPoint];
-//		
-//		if (CGPathContainsPoint(view.path, nil, polygonViewPoint, NO))
-//		{
-//			NSLog(@"you just touched INactive path %d!", u);
-//		}
-//		if (CGPathContainsPoint(view.path, nil, touchPoint, NO))
-//		{
-//			NSLog(@"you just touched INactive path %d!", u);
-//		}
-//		u++;
-//	}
-//	u = 1;
-//	for (ASPolyline *polyline in arrayOfActivePolyline)
-//	{
-//		ASPolylineView *view = (ASPolylineView *)[my_mapView viewForOverlay:polyline];
-//		CGPoint polygonViewPoint = [view pointForMapPoint:mapPoint];
-//
-//		if (CGPathContainsPoint(view.path, nil, polygonViewPoint, NO))
-//		{
-//			NSLog(@"you just touched active path %d!", u);
-//		}
-//		if (CGPathContainsPoint(view.path, nil, touchPoint, NO))
-//		{
-//			NSLog(@"you just touched active path %d!", u);
-//		}
-//		u++;
-//	}
+//	CGPoint					touchPoint2 = [mapView convertCoordinate:touchMapCoordinate toPointToView:mapView];
 
-//	NSMutableArray *tappedOverlays = [[NSMutableArray alloc]init];    // 0 object
-//    MKMapView       *mapView = (MKMapView *)recognizer.view;
-//    id <MKOverlay>  tappedOverlay = nil;
-//
-//    for (id <MKOverlay> overlay in arrayOfInactivePolyline)
-//    {
-//        MKOverlayView *view = [mapView viewForOverlay:overlay];
-////		view hitTest: withEvent:
-//    	if (overlay != nil)
-//    	{
-//        	UIView* hitView = [view hitTest:[recognizer locationInView:view] withEvent:nil];
-//			if (hitView == view)
-//			{
-//				NSLog(@"your touch inside the polyline");
-//			}
-//    	}
-//        if (view)
-//        {
-//            // Get view frame rect in the mapView's coordinate system
-//            CGRect viewFrameInMapView = [view.superview convertRect:view.frame toView:mapView];
-//            // Get touch point in the mapView's coordinate system
-//            CGPoint point = [recognizer locationInView:mapView];
-//
-//            // Check if the touch is within the view bounds
-//            if (CGRectContainsPoint(viewFrameInMapView, point))
-//            {
-//                //        tappedOverlay = overlay;
-//                [tappedOverlays addObject:overlay];
-//                //        break;
-//                continue;
-//            }
-//        }
-//    }
-//    for (id <MKOverlay> overlay in tappedOverlays)
-//    {
-//        NSLog(@"Tapped view: %@", [mapView viewForOverlay:overlay]);
-//    }
+	NSLog(@"touchPoint(x, y) = (%f, %f)", touchPoint.x, touchPoint.y);
+
+	NSUInteger u = 1;	
+	for (ASPolyline *polyline in arrayOfInactivePolyline)
+	{
+		if ([self isTouchPoint:touchPoint touchInsidePolyline:polyline])
+		{
+			NSLog(@"you just touched INactive path %u %@", u, polyline);
+		}
+		u++;
+	}
+	u = 1;
+	for (ASPolyline *polyline in arrayOfActivePolyline)
+	{
+		if ([self isTouchPoint:touchPoint touchInsidePolyline:polyline])
+		{
+			NSLog(@"you just touched   Active path %u %@", u, polyline);
+		}
+		u++;
+	}
 
 	// if there is only one path on the map, do nothing
 	if ([directions.status isEqualToString:@"OK"])
 	{
-		if (my_mapView.overlays.count == 1)
+		if (my_mapView.overlays.count == 2)// one active and one inactive
 			return;
 
 		// remove active, last polyline (top layer) on the map
@@ -453,8 +454,8 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer
        {
             polylineView.lineWidth = 5.0f;
             polylineView.borderMultiplier = 1.5f;
-            polylineView.backgroundColor = [UIColor clearColor];
-            polylineView.fillColor = [UIColor blueColor];
+            //polylineView.backgroundColor = [UIColor clearColor];
+            //polylineView.fillColor = [UIColor blueColor];
             polylineView.strokeColor = [[UIColor blueColor]colorWithAlphaComponent:0.5f];
             polylineView.borderColor = [UIColor colorWithRed:0.0f green:0.1f blue:1.0f alpha:1.0f];
 
@@ -467,13 +468,13 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer
        {
             polylineView.lineWidth = 5.0f;
             polylineView.borderMultiplier = 1.5f;
-            polylineView.backgroundColor = [UIColor yellowColor];
-            polylineView.fillColor = [UIColor cyanColor];
+            //polylineView.backgroundColor = [UIColor yellowColor];
+            //polylineView.fillColor = [UIColor cyanColor];
             polylineView.strokeColor = [UIColor colorWithRed:0.0f green:0.5f blue:0.5f alpha:0.2f];
             polylineView.borderColor = [UIColor colorWithRed:0.0f green:0.0f blue:1.0f alpha:0.5f];
        }
 		polylineView.lineJoin = kCGLineJoinBevel;
-		polylineView.lineCap = kCGLineJoinRound;
+		polylineView.lineCap = kCGLineCapSquare;
 
         return polylineView;
 	}
@@ -495,6 +496,9 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer
 	// shows the routeInfoBar
     routeInfoBar.hidden = NO;
 
+	if (src) src = nil;
+	if (dst) dst = nil;
+
     src = [[Place alloc]init];
     dst = [[Place alloc]init];
     src.name = @"Home";
@@ -514,6 +518,8 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer
 	dst.longitude = [[NSNumber alloc]initWithDouble:end.longitude];
 
     [self showRouteFrom:src to:dst];
+	src = nil;
+	dst = nil;
     [activity stopAnimating];
 	[self updateRouteInfoBar];
 }

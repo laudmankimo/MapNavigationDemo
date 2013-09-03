@@ -5,8 +5,8 @@
 //
 //
 
-#import <MapKit/MapKit.h>
-
+//#import <MapKit/MapKit.h>
+#import "ASPolyline.h"
 @interface ASPolylineView : MKOverlayPathView
 
 /* The color used for the wider border around the polyline.
@@ -25,10 +25,11 @@
  * 1.5 leads to a very thin line.
  * Defaults to 2.0.
  */
-@property (nonatomic, assign) CGFloat borderMultiplier;
+@property (nonatomic, readwrite) CGFloat borderMultiplier;
 
 - (id)initWithPolyline:(MKPolyline *)polyline;
 
-- (MKPolyline *)polyline;
+//- (MKPolyline *)polyline;
+- (ASPolyline *)polyline;
 
 @end

@@ -10,4 +10,5 @@
 
 @interface ASPolyline : MKPolyline
 @property (nonatomic, readwrite) BOOL active;
+@property (nonatomic, strong) NSMutableArray *finalPath;// store for Array of calculated MKMapPoint
 @end

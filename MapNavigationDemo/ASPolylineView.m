@@ -9,7 +9,8 @@
 
 @interface ASPolylineView ()
 
-@property (nonatomic, strong) MKPolyline *polyline;
+//@property (nonatomic, strong) MKPolyline *polyline;
+@property (nonatomic, strong) ASPolyline *polyline;
 //@property (nonatomic, retain) UIColor *backgroundColor;
 
 @end
@@ -22,7 +23,7 @@
 
     if (self)
     {
-        self.polyline = polyline;
+        self.polyline = (ASPolyline *)polyline;
         // defaults
         self.borderColor = [UIColor blackColor];
         self.backgroundColor = [UIColor whiteColor];
@@ -75,71 +76,131 @@
 - (void)createPath
 {
     // turn the polyline into a path
-    CGMutablePathRef    newPath = CGPathCreateMutable();
-    BOOL                pathIsEmpty = YES;
-	NSUInteger			pointCount = self.polyline.pointCount;	// for performance
-	CGPoint				center;
-	CGPoint				point;
-	CGPoint				nextPoint;
+//    CGMutablePathRef    newPath = CGPathCreateMutable();
+//    BOOL                pathIsEmpty = YES;
+//	NSUInteger			pointCount = self.polyline.pointCount;	// for performance
+//	CGPoint				center;
+//	CGPoint				point;
+//	CGPoint				nextPoint;
+//	CGPoint				vector;
+//	float				angle;
+//#define RADIUS 5.0f
+//	// forward
+//	for (NSUInteger idx = 0; idx < pointCount; idx++)
+//    {
+//		center = [self pointForMapPoint:self.polyline.points[idx]];
+//		if (idx == (pointCount-1))	// last point
+//		{
+//			CGPathAddLineToPoint(newPath, nil, center.x, center.y);
+//			break;
+//		}
+//		nextPoint = [self pointForMapPoint:self.polyline.points[idx+1]];
+//		vector = CGPointMake(nextPoint.x - center.x, nextPoint.y - center.y);
+//		angle = atan2f(vector.y, vector.x);
+//		point.x = center.x + (sinf(angle) * self.lineWidth);
+//		point.y = center.y + (cosf(angle) * self.lineWidth);
+//		point.x = center.x + (sinf(angle) * RADIUS);
+//		point.y = center.y + (cosf(angle) * RADIUS);
+//
+//        if (pathIsEmpty)
+//        {
+//            CGPathMoveToPoint(newPath, nil, center.x, center.y);
+//            pathIsEmpty = NO;
+//        }
+//        else
+//        {
+//            CGPathAddLineToPoint(newPath, nil, point.x, point.y);
+//        }
+//    }
+//	// backward
+//	for (NSInteger idx = (pointCount-2); idx >= 0; idx--)
+//    {
+//		center = [self pointForMapPoint:self.polyline.points[idx]];
+//		if (idx == 0)	// last point
+//		{
+//			CGPathAddLineToPoint(newPath, nil, center.x, center.y);
+//			break;
+//		}
+//		nextPoint = [self pointForMapPoint:self.polyline.points[idx-1]];
+//		vector = CGPointMake(nextPoint.x - center.x, nextPoint.y - center.y);
+//		angle = atan2f(vector.y, vector.x);
+//		point.x = center.x + (sinf(angle) * self.lineWidth);
+//		point.y = center.y + (cosf(angle) * self.lineWidth);
+//		point.x = center.x + (sinf(angle) * RADIUS);
+//		point.y = center.y + (cosf(angle) * RADIUS);
+//
+//		CGPathAddLineToPoint(newPath, nil, point.x, point.y);
+//    }
+//	CGPathCloseSubpath(newPath);
+//    self.path = newPath;
+//    CGPathRelease(newPath);
 
-	CGPoint				vector;
-	float				angle;
-	// forward
-	for (NSUInteger idx = 0; idx < pointCount; idx++)
-    {
-		center = [self pointForMapPoint:self.polyline.points[idx]];
-		if (idx == (pointCount-1))	// last point
-		{
-			CGPathAddLineToPoint(newPath, nil, center.x, center.y);
-			break;
-		}
-		nextPoint = [self pointForMapPoint:self.polyline.points[idx+1]];
-		vector = CGPointMake(nextPoint.x - center.x, nextPoint.y - center.y);
-		angle = atan2f(vector.y, vector.x);
-		point.x = center.x + (sinf(angle) * self.lineWidth);
-		point.y = center.y + (cosf(angle) * self.lineWidth);
-		
+//下列代码显示出了地图上的MKOverlay的坐标系统
+	BOOL pathIsEmpty = YES;
+	CGMutablePathRef pathRef = CGPathCreateMutable();
+	CGPoint point;
+	CGPoint center;
+	float angle;
+	float radius = 2500.0f;
+//	NSUInteger idx = 0;
+	NSUInteger pointCount = self.polyline.pointCount;	// for performance
+
+	center = [self pointForMapPoint:self.polyline.points[pointCount/2]];
+//	MKMapPoint centerGlobal = [self mapPointForPoint:center];
+	MKMapPoint pointGlobal;
+	NSValue *pptGlobal;
+	
+	if (self.polyline.finalPath == nil)
+		self.polyline.finalPath = [[NSMutableArray alloc]init];	// 0 objects
+	else
+		[self.polyline.finalPath removeAllObjects];
+
+	NSLog(@"center(x,y) = (%f, %f), and radius = %f", center.x, center.y, radius);
+	for (angle = 0; angle < 6.28318530717959f * 1.0f; angle += (6.28318530717959/50.0))
+	{
+		point.x = center.x + (sinf(angle) * radius);
+		point.y = center.y + (cosf(angle) * radius);
+
+		pointGlobal = [self mapPointForPoint:point];
+		pptGlobal = [NSValue value:&pointGlobal withObjCType:@encode(MKMapPoint)];
+//		[self.polyline.finalPath addObject:(__bridge id)(&pointGlobal)];
+		[self.polyline.finalPath addObject:pptGlobal]; pptGlobal = nil;
+
         if (pathIsEmpty)
         {
-            CGPathMoveToPoint(newPath, nil, center.x, center.y);
+            CGPathMoveToPoint(pathRef, nil, point.x, point.y);
             pathIsEmpty = NO;
         }
         else
         {
-            CGPathAddLineToPoint(newPath, nil, point.x, point.y);
+            CGPathAddLineToPoint(pathRef, nil, point.x, point.y);
         }
-    }
-	// backward
-	for (NSInteger idx = (pointCount-2); idx >= 0; idx--)
-    {
-		center = [self pointForMapPoint:self.polyline.points[idx]];
-		if (idx == 0)	// last point
-		{
-			CGPathAddLineToPoint(newPath, nil, center.x, center.y);
-			break;
-		}
-		nextPoint = [self pointForMapPoint:self.polyline.points[idx-1]];
-		vector = CGPointMake(nextPoint.x - center.x, nextPoint.y - center.y);
-		angle = atan2f(vector.y, vector.x);
-		point.x = center.x + (sinf(angle) * self.lineWidth);
-		point.y = center.y + (cosf(angle) * self.lineWidth);
-		
-		CGPathAddLineToPoint(newPath, nil, point.x, point.y);
-    }
-	CGPathCloseSubpath(newPath);
-    self.path = newPath;
-    CGPathRelease(newPath);
+	}
+    CGPathCloseSubpath(pathRef);
+	
+	self.path = pathRef;
+//	CGPoint inPoint;
+//	CGPoint outPoint;
+//	inPoint = CGPointMake(center.x, center.y + radius - 1.0f);
+//	inPoint = CGPointMake(center.x + radius + 1.0f, center.y);
+//    if (CGPathContainsPoint(pathRef, NULL, inPoint, NO))
+//    {
+//        NSLog(@"inPoint (%.1f,%.1f)  IN %@ %@ path!", inPoint.x, inPoint.y, self.polyline, self.polyline.active ? @"active" : @"inactive");
+//    }
+//	else if (!CGPathContainsPoint(pathRef, NULL, inPoint, NO))
+//    {
+//        NSLog(@"inPoint (%.1f,%.1f) OUT %@ %@ path!", inPoint.x, inPoint.y, self.polyline, self.polyline.active ? @"active" : @"inactive");
+//    }
 
-//	  CGMutablePathRef pathRef = CGPathCreateMutable();
+////////////////////////////////////////////////////////////////////////////////
+//    CGMutablePathRef pathRef = CGPathCreateMutable();
 //    CGPathMoveToPoint(pathRef, NULL, 4, 4);
 //    CGPathAddLineToPoint(pathRef, NULL, 4, 8);
 //    CGPathAddLineToPoint(pathRef, NULL, 10, 4);
 //    CGPathAddLineToPoint(pathRef, NULL, 4, 4);
-//    CGPathCloseSubpath(pathRef);
-//
+//    CGPathRelease(newPath);
 //    CGPoint point = CGPointMake(5,7);
 //    CGPoint outPoint = CGPointMake(5,10);
-//    
 //    if (CGPathContainsPoint(pathRef, NULL, point, NO))
 //    {
 //        NSLog(@"point in path!");
@@ -170,7 +231,21 @@
         forZoomScale:(MKZoomScale)zoomScale
         inContext   :(CGContextRef)context
 {
+//	CGFloat whiteToRed [] = {
+//        1.0, 1.0, 1.0, 1.0, // 白色
+//        1.0, 0.0, 0.0, 1.0	// 红色
+//    };
+//	CGColorSpaceRef baseSpace = CGColorSpaceCreateDeviceRGB();	// 我们要使用RGB颜色空间
+	// 在RGB颜色空间内建立一个间层色，有两个颜色在阵列里面，分别是白色到蓝色
+//	CGGradientRef gradient = CGGradientCreateWithColorComponents(baseSpace, whiteToRed, NULL, 2);
+//	CGContextSaveGState(context);
     CGContextAddPath(context, self.path);
+//	CGContextClip(context);
+//	CGContextEOClip(context);
+//	CGPoint startPoint = CGPointMake(self.path);
+//	CGPoint endPoint = CGPointMake();
+//	CGContextDrawLinearGradient(context, gradient, startPoint, endPoint, 0);
+//	CGContextRestoreGState(context);
 
     // use the defaults which takes care of the dash pattern
     // and other things
