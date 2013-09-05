@@ -11,8 +11,10 @@
 
 #ifdef DEBUG
 #define dbgprintf(format, ...) NSLog(@"[%s] file:%s, line:%04d, \t"format, __FUNCTION__, __FILE__, __LINE__, ##__VA_ARGS__);
+#define LOG_FUNCTION NSLog(@"%s",__FUNCTION__);
 #else
 #define dbgprintf(format, ...)
+#define LOG_FUNCTION
 #endif
 
 #endif
