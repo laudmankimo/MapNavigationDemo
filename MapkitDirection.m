@@ -68,13 +68,13 @@
     }
 
     CLLocation *first = [[CLLocation alloc]
-        initWithLatitude:[[NSNumber numberWithFloat:f.latitude] floatValue]
-        longitude       :[[NSNumber numberWithFloat:f.longitude] floatValue]];
+        initWithLatitude:f.latitude
+        longitude       :f.longitude];
 
     CLLocation *end = [[CLLocation alloc]
-        initWithLatitude:[[NSNumber numberWithFloat:t.latitude] floatValue]
-        longitude       :[[NSNumber numberWithFloat:t.longitude] floatValue]];
-
+        initWithLatitude:t.latitude
+        longitude       :t.longitude];
+		
     [targetArray insertObject:first atIndex:0];
     [first release];
     [targetArray addObject:end];
