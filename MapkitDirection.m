@@ -176,7 +176,7 @@
 //    status = tmpString;
 //    [tmpString release];
 //    tmpString = nil;
-    status = [[NSString alloc]initWithFormat:@"%@", [allDataDictionary objectForKey:@"status"]];// retainCount = 2
+    status = [[NSString alloc]initWithFormat:@"%@", allDataDictionary[@"status"]];// retainCount = 2
     //	status = [NSString stringWithFormat:@"%@", [allDataDictionary objectForKey:@"status"]];
 
     if (arrayOfRoutes == nil)
@@ -197,26 +197,26 @@
         NSLog(@"google navigation failed!");
     }
 
-    NSArray *routes = [allDataDictionary objectForKey:@"routes"];
+    NSArray *routes = allDataDictionary[@"routes"];
 
     for (NSDictionary *diction in routes)
     {
         Routes *route = [[Routes alloc]init];
 
         tmpBounds = [[Bounds alloc]init];
-        id id_in_routes = [[diction objectForKey:@"bounds"]objectForKey:@"northeast"];
-        tmpBounds.northeast = CLLocationCoordinate2DMake([[id_in_routes objectForKey:@"lat"] doubleValue], [[id_in_routes objectForKey:@"lng"]doubleValue]);
+        id id_in_routes = diction[@"bounds"][@"northeast"];
+        tmpBounds.northeast = CLLocationCoordinate2DMake([id_in_routes[@"lat"] doubleValue], [id_in_routes[@"lng"]doubleValue]);
 
-        id_in_routes = [[diction objectForKey:@"bounds"]objectForKey:@"southwest"];
-        tmpBounds.southwest = CLLocationCoordinate2DMake([[id_in_routes objectForKey:@"lat"] doubleValue], [[id_in_routes objectForKey:@"lng"] doubleValue]);
+        id_in_routes = diction[@"bounds"][@"southwest"];
+        tmpBounds.southwest = CLLocationCoordinate2DMake([id_in_routes[@"lat"] doubleValue], [id_in_routes[@"lng"] doubleValue]);
         route.bounds = tmpBounds;
         [tmpBounds release]; tmpBounds = nil;
 
-        tmpString = [[NSString alloc]initWithFormat:@"%@", [diction objectForKey:@"summary"]];
+        tmpString = [[NSString alloc]initWithFormat:@"%@", diction[@"summary"]];
         route.summary = tmpString;
         [tmpString release]; tmpString = nil;
 
-        tmpString = [[NSString alloc]initWithFormat:@"%@", [diction objectForKey:@"copyrights"]]; // allocated new memory to hold string
+        tmpString = [[NSString alloc]initWithFormat:@"%@", diction[@"copyrights"]]; // allocated new memory to hold string
         route.copyrights = tmpString;
         [tmpString release]; tmpString = nil;
 
@@ -232,100 +232,100 @@
         route.detailed_polyline = tmpMutableArray;
         [tmpMutableArray release]; tmpMutableArray = nil;
 
-        NSArray *legs = [diction objectForKey:@"legs"];
+        NSArray *legs = diction[@"legs"];
 
         for (NSDictionary *diction2 in legs)
         {
             Legs    *leg = [[Legs alloc]init];
             id      id_in_legs;
-            id_in_legs = [diction2 objectForKey:@"distance"];
+            id_in_legs = diction2[@"distance"];
             tmpProperties = [[Properties alloc]init];
 
-            tmpString = [[NSString alloc]initWithFormat:@"%@", [id_in_legs objectForKey:@"text"]];
+            tmpString = [[NSString alloc]initWithFormat:@"%@", id_in_legs[@"text"]];
             tmpProperties.text = tmpString;
             [tmpString release]; tmpString = nil;
 
-            tmpProperties.value = [[id_in_legs objectForKey:@"value"] integerValue];
+            tmpProperties.value = [id_in_legs[@"value"] integerValue];
             leg.distance = tmpProperties;
             [tmpProperties release]; tmpProperties = nil;
 
-            id_in_legs = [diction2 objectForKey:@"duration"];
+            id_in_legs = diction2[@"duration"];
             tmpProperties = [[Properties alloc]init];
 
-            tmpString = [[NSString alloc]initWithFormat:@"%@", [id_in_legs objectForKey:@"text"]];
+            tmpString = [[NSString alloc]initWithFormat:@"%@", id_in_legs[@"text"]];
             tmpProperties.text = tmpString;
             [tmpString release]; tmpString = nil;
 
-            tmpProperties.value = [[id_in_legs objectForKey:@"value"] integerValue];
+            tmpProperties.value = [id_in_legs[@"value"] integerValue];
             leg.duration = tmpProperties;
             [tmpProperties release]; tmpProperties = nil;
 
-            id_in_legs = [diction2 objectForKey:@"start_address"];
+            id_in_legs = diction2[@"start_address"];
             tmpString = [[NSString alloc]initWithFormat:@"%@", id_in_legs];
             leg.start_address = tmpString;
             [tmpString release]; tmpString = nil;
 
-            id_in_legs = [diction2 objectForKey:@"end_address"];
+            id_in_legs = diction2[@"end_address"];
             tmpString = [[NSString alloc]initWithFormat:@"%@", id_in_legs];
             leg.end_address = tmpString;
             [tmpString release]; tmpString = nil;
 
-            id_in_legs = [diction2 objectForKey:@"start_location"];
-            leg.start_location = CLLocationCoordinate2DMake([[id_in_legs objectForKey:@"lat"]doubleValue], [[id_in_legs objectForKey:@"lng"]doubleValue]);
+            id_in_legs = diction2[@"start_location"];
+            leg.start_location = CLLocationCoordinate2DMake([id_in_legs[@"lat"]doubleValue], [id_in_legs[@"lng"]doubleValue]);
             start = leg.start_location; // copy
 
-            id_in_legs = [diction2 objectForKey:@"end_location"];
-            leg.end_location = CLLocationCoordinate2DMake([[id_in_legs objectForKey:@"lat"]doubleValue], [[id_in_legs objectForKey:@"lng"]doubleValue]);
+            id_in_legs = diction2[@"end_location"];
+            leg.end_location = CLLocationCoordinate2DMake([id_in_legs[@"lat"]doubleValue], [id_in_legs[@"lng"]doubleValue]);
             end = leg.end_location; // copy
 
             tmpMutableArray = [[NSMutableArray alloc]init];
             leg.steps = tmpMutableArray;
             [tmpMutableArray release]; tmpMutableArray = nil;
 
-            NSArray *steps = [diction2 objectForKey:@"steps"]; // get number of steps
+            NSArray *steps = diction2[@"steps"]; // get number of steps
 
             for (NSDictionary *diction3 in steps)
             {
                 Steps   *step = [[Steps alloc]init];
                 id      id_in_steps = nil;
 
-                id_in_steps = [diction3 objectForKey:@"distance"];
+                id_in_steps = diction3[@"distance"];
                 tmpProperties = [[Properties alloc]init];
-                tmpString = [[NSString alloc]initWithFormat:@"%@", [id_in_steps objectForKey:@"text"]];
+                tmpString = [[NSString alloc]initWithFormat:@"%@", id_in_steps[@"text"]];
                 tmpProperties.text = tmpString;
                 [tmpString release]; tmpString = nil;
-                tmpProperties.value = [[id_in_steps objectForKey:@"value"]integerValue];
+                tmpProperties.value = [id_in_steps[@"value"]integerValue];
                 step.distance = tmpProperties;
                 [tmpProperties release];
                 tmpProperties = nil;
 
-                id_in_steps = [diction3 objectForKey:@"duration"];
+                id_in_steps = diction3[@"duration"];
                 tmpProperties = [[Properties alloc]init];
-                tmpString = [[NSString alloc]initWithFormat:@"%@", [id_in_steps objectForKey:@"text"]];
+                tmpString = [[NSString alloc]initWithFormat:@"%@", id_in_steps[@"text"]];
                 tmpProperties.text = tmpString;
                 [tmpString release]; tmpString = nil;
-                tmpProperties.value = [[id_in_steps objectForKey:@"value"]integerValue];
+                tmpProperties.value = [id_in_steps[@"value"]integerValue];
                 step.distance = tmpProperties;
                 [tmpProperties release];
                 tmpProperties = nil;
 
-                id_in_steps = [diction3 objectForKey:@"start_location"];
-                step.start_locatoin = CLLocationCoordinate2DMake([[id_in_steps objectForKey:@"lat"]doubleValue], [[id_in_steps objectForKey:@"lng"]doubleValue]);
+                id_in_steps = diction3[@"start_location"];
+                step.start_locatoin = CLLocationCoordinate2DMake([id_in_steps[@"lat"]doubleValue], [id_in_steps[@"lng"]doubleValue]);
 
-                id_in_steps = [diction3 objectForKey:@"end_location"];
-                step.end_location = CLLocationCoordinate2DMake([[id_in_steps objectForKey:@"lat"]doubleValue], [[id_in_steps objectForKey:@"lng"]doubleValue]);
+                id_in_steps = diction3[@"end_location"];
+                step.end_location = CLLocationCoordinate2DMake([id_in_steps[@"lat"]doubleValue], [id_in_steps[@"lng"]doubleValue]);
 
-                id_in_steps = [diction3 objectForKey:@"polyline"];
-                tmpString = [[NSString alloc]initWithFormat:@"%@", [id_in_steps objectForKey:@"points"]];
+                id_in_steps = diction3[@"polyline"];
+                tmpString = [[NSString alloc]initWithFormat:@"%@", id_in_steps[@"points"]];
                 step.polyline = tmpString;
                 [tmpString release]; tmpString = nil;
 
-                id_in_steps = [diction3 objectForKey:@"travel_mode"];
+                id_in_steps = diction3[@"travel_mode"];
                 tmpString = [[NSString alloc]initWithFormat:@"%@", id_in_steps];
                 step.travel_mode = tmpString;
                 [tmpString release]; tmpString = nil;
 
-                id_in_steps = [diction3 objectForKey:@"html_instructions"];
+                id_in_steps = diction3[@"html_instructions"];
                 tmpString = [[NSString alloc]initWithFormat:@"%@", id_in_steps];
                 step.html_instructions = tmpString;
                 [tmpString release]; tmpString = nil;
@@ -339,8 +339,8 @@
         } // for (NSDictionary *diction2 in legs)
 
 		// translate 'overview_polyline' encoded polyline string to NSMutableArray of (CLLocation *)
-        id_in_routes = [diction objectForKey:@"overview_polyline"];
-        encoded = [[NSMutableString alloc]initWithFormat:@"%@", [id_in_routes objectForKey:@"points"]];
+        id_in_routes = diction[@"overview_polyline"];
+        encoded = [[NSMutableString alloc]initWithFormat:@"%@", id_in_routes[@"points"]];
         [self decodePolyLine:encoded toArray:route.overview_polyline from:start to:end];
         [encoded release]; encoded = nil;    // free memory
 
