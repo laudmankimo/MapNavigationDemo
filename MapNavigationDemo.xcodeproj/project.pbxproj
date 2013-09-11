@@ -12,6 +12,7 @@
 		2CA4C02116630B580052CF9E /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2CA4C02016630B580052CF9E /* CoreGraphics.framework */; };
 		2CA4C04016630B820052CF9E /* MapKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2CA4C03F16630B820052CF9E /* MapKit.framework */; };
 		2CA4C04216630B880052CF9E /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2CA4C04116630B880052CF9E /* CoreLocation.framework */; };
+		B87C455317E050FE0050A190 /* RouteSelectRegion.m in Sources */ = {isa = PBXBuildFile; fileRef = B87C455217E050FE0050A190 /* RouteSelectRegion.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		B88E1660179847B1007D458F /* Properties.m in Sources */ = {isa = PBXBuildFile; fileRef = B88E165A179847B1007D458F /* Properties.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		B88E1661179847B1007D458F /* Routes.m in Sources */ = {isa = PBXBuildFile; fileRef = B88E165C179847B1007D458F /* Routes.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		B88E1662179847B1007D458F /* Steps.m in Sources */ = {isa = PBXBuildFile; fileRef = B88E165E179847B1007D458F /* Steps.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
@@ -39,6 +40,8 @@
 		2CA4C02016630B580052CF9E /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
 		2CA4C03F16630B820052CF9E /* MapKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MapKit.framework; path = System/Library/Frameworks/MapKit.framework; sourceTree = SDKROOT; };
 		2CA4C04116630B880052CF9E /* CoreLocation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreLocation.framework; path = System/Library/Frameworks/CoreLocation.framework; sourceTree = SDKROOT; };
+		B87C455117E050FE0050A190 /* RouteSelectRegion.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RouteSelectRegion.h; sourceTree = SOURCE_ROOT; };
+		B87C455217E050FE0050A190 /* RouteSelectRegion.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RouteSelectRegion.m; sourceTree = SOURCE_ROOT; };
 		B88E1659179847B1007D458F /* Properties.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Properties.h; sourceTree = "<group>"; };
 		B88E165A179847B1007D458F /* Properties.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Properties.m; sourceTree = "<group>"; };
 		B88E165B179847B1007D458F /* Routes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Routes.h; sourceTree = "<group>"; };
@@ -123,6 +126,8 @@
 		2CA4C02216630B580052CF9E /* MapNavigationDemo */ = {
 			isa = PBXGroup;
 			children = (
+				B87C455117E050FE0050A190 /* RouteSelectRegion.h */,
+				B87C455217E050FE0050A190 /* RouteSelectRegion.m */,
 				B8B267BF17A7DD5600552F81 /* dbgprintf.h */,
 				B8B267B917A7DD5600552F81 /* AppDelegate.h */,
 				B8B267BA17A7DD5600552F81 /* AppDelegate.m */,
@@ -255,6 +260,7 @@
 				B8B267DD17A7DD5600552F81 /* Place.m in Sources */,
 				B8B267DE17A7DD5600552F81 /* PlaceMark.m in Sources */,
 				B8B267E017A7DD5600552F81 /* ViewController.m in Sources */,
+				B87C455317E050FE0050A190 /* RouteSelectRegion.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
