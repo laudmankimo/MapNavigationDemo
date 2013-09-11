@@ -13,7 +13,7 @@
 #import "PlaceMark.h"
 #import "MapkitDirection.h"
 
-@interface ViewController : UIViewController <CLLocationManagerDelegate, MapkitDirectionsDelegate>
+@interface ViewController : UIViewController <CLLocationManagerDelegate, MapkitDirectionsDelegate, MKMapViewDelegate>
 {
     CLLocationManager   *locmanager;
     Place               *src;
@@ -36,6 +36,7 @@
 @property (nonatomic, strong) NSMutableArray                    *arrayOfInactivePolyline;
 @property (nonatomic, readwrite) NSUInteger                     polylineIndex;
 @property (nonatomic, readwrite) NSUInteger                     zoomLevel;
+@property (nonatomic, strong) NSMutableArray 					*arrayOfTouchZone;
 
 // long Press used to put annotation on the map
 - (IBAction)longPressAct:(UILongPressGestureRecognizer *)recognizer;
