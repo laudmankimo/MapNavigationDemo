@@ -7,17 +7,14 @@
 
 #import "ASPolylineView.h"
 #import "dbgprintf.h"
-@interface ASPolylineView ()
 
-// @property (nonatomic, strong) MKPolyline *polyline;
-@property (nonatomic, strong) ASPolyline *polyline;
-// @property (nonatomic, retain) UIColor *backgroundColor;
+@interface ASPolylineView ()
 
 @end
 
 @implementation ASPolylineView
 
-- (id)initWithPolyline:(MKPolyline *)polyline
+- (id)initWithPolyline:(ASPolyline *)polyline
 {
     self = [super initWithOverlay:polyline];
 
@@ -49,7 +46,7 @@
     [self drawLine:self.borderColor.CGColor width:baseWidth * self.borderMultiplier allowDashes:NO forZoomScale:zoomScale inContext:context];
 
 	// a white background.
-    [self drawLine:self.backgroundColor.CGColor width:baseWidth allowDashes:NO forZoomScale:zoomScale inContext:context];
+	//[self drawLine:self.backgroundColor.CGColor width:baseWidth allowDashes:NO forZoomScale:zoomScale inContext:context];
 
 	// draw the actual line.
     [self drawLine:self.strokeColor.CGColor width:baseWidth allowDashes:YES forZoomScale:zoomScale inContext:context];
