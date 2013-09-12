@@ -10,6 +10,5 @@
 
 @implementation ASPolyline
 @synthesize active;
-@synthesize finalPath;
 
 @end
